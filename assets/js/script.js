@@ -61,7 +61,19 @@ $(function() {
 
     function getComputedTranslateXY(obj) {
       const transArr = [];
-      if(!window.getComputedStyle) return;
+
+      if (!window.getComputedStyle) {
+        return;
+      }
+
+      if ('attributeStyleMap' in obj && obj.attributeStyleMap.get('transform')) {
+        const elementTransforms = obj.attributeStyleMap.get('transform');
+        return [
+          elementTransforms[0].x.value,
+          elementTransforms.length > 1 ? elementTransforms[1].y.value : 0
+        ];
+      }
+
       const style = getComputedStyle(obj),
         transform = style.transform || style.webkitTransform || style.mozTransform;
       let mat = transform.match(/^matrix3d\((.+)\)$/);
@@ -88,8 +100,8 @@ $(function() {
         y: clientY
       };
 
-      heroImage.style.transform = `translateX(${imageTransformX - (posDiff.x / 60)}px) translateY(${imageTransformY - (posDiff.y / 60)}px)`;
-      heroText.style.transform = `translateX(${textTransformX - (posDiff.x / 30)}px)`;
+      heroImage.style.transform = `translateX(${imageTransformX + (posDiff.x / 90)}px) translateY(${imageTransformY + (posDiff.y / 90)}px)`;
+      heroText.style.transform = `translateX(${textTransformX - (posDiff.x / 30)}px) translateY(${textTransformY - (posDiff.y / 30)}px)`;
     }
 
     heroInner.addEventListener('mousemove', handleHeroMouseMove);

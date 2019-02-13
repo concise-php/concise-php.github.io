@@ -53,7 +53,48 @@ $(function() {
   | them in this file.
   |
   */
+ const heroInner = document.querySelector('.js-hero__inner');
+ const heroImage = document.querySelector('.js-hero__image');
+ const heroText = document.querySelector('.js-hero__text');
 
- new WOW().init();
+  const heroTransforms = () => {
+
+    function getComputedTranslateXY(obj) {
+      const transArr = [];
+      if(!window.getComputedStyle) return;
+      const style = getComputedStyle(obj),
+        transform = style.transform || style.webkitTransform || style.mozTransform;
+      let mat = transform.match(/^matrix3d\((.+)\)$/);
+      if(mat) return parseFloat(mat[1].split(', ')[13]);
+      mat = transform.match(/^matrix\((.+)\)$/);
+      mat ? transArr.push(parseFloat(mat[1].split(', ')[4])) : 0;
+      mat ? transArr.push(parseFloat(mat[1].split(', ')[5])) : 0;
+      return transArr;
+    }
+
+    function handleHeroMouseMove({ currentTarget: target, clientX, clientY }) {
+      const { pos: { x: posX, y: posY } = {} } = target;
+      const posDiff = {
+        x: (clientX - (posX || clientX)),
+        y: (clientY - (posY || clientY))
+      };
+
+      const [ imageTransformX = 0, imageTransformY = 0 ] = getComputedTranslateXY(heroImage);
+      const [ textTransformX = 0, textTransformY = 0 ] = getComputedTranslateXY(heroText);
+
+      // New hero position
+      target.pos = {
+        x: clientX,
+        y: clientY
+      };
+
+      heroImage.style.transform = `translateX(${imageTransformX - (posDiff.x / 60)}px) translateY(${imageTransformY - (posDiff.y / 60)}px)`;
+      heroText.style.transform = `translateX(${textTransformX - (posDiff.x / 30)}px)`;
+    }
+
+    heroInner.addEventListener('mousemove', handleHeroMouseMove);
+  };
+
+  new WOW().init();
+  heroImage.addEventListener('animationend', heroTransforms)
 });
-

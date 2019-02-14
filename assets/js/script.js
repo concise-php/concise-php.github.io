@@ -59,8 +59,7 @@ $(function() {
 
   const heroTransforms = () => {
 
-    function getComputedTranslateXY(obj) {
-      const transArr = [];
+    function getComputedTranslateXYZ(obj) {
 
       if (!window.getComputedStyle) {
         return;
@@ -68,20 +67,29 @@ $(function() {
 
       if ('attributeStyleMap' in obj && obj.attributeStyleMap.get('transform')) {
         const elementTransforms = obj.attributeStyleMap.get('transform');
+
         return [
-          elementTransforms[0].x.value,
-          elementTransforms.length > 1 ? elementTransforms[1].y.value : 0
+          elementTransforms[0].x ? elementTransforms[0].x.value : 0,
+          elementTransforms[0].y ? elementTransforms[0].y.value : 0,
+          elementTransforms[0].z ? elementTransforms[0].z.value : 0
         ];
       }
 
       const style = getComputedStyle(obj),
         transform = style.transform || style.webkitTransform || style.mozTransform;
+
       let mat = transform.match(/^matrix3d\((.+)\)$/);
-      if(mat) return parseFloat(mat[1].split(', ')[13]);
-      mat = transform.match(/^matrix\((.+)\)$/);
-      mat ? transArr.push(parseFloat(mat[1].split(', ')[4])) : 0;
-      mat ? transArr.push(parseFloat(mat[1].split(', ')[5])) : 0;
-      return transArr;
+      let indexes = [12, 13, 14];
+
+      if (!mat) {
+        mat = transform.match(/^matrix\((.+)\)$/);
+        indexes = [4, 5, 6];
+      }
+
+      const matSplited = mat[1].split(', ');
+      const transformArray = indexes.map(index => matSplited.length > index ? parseFloat(matSplited[index]) : 0);
+      console.log(transformArray);
+      return transformArray;
     }
 
     function handleHeroMouseMove({ currentTarget: target, clientX, clientY }) {
@@ -91,8 +99,8 @@ $(function() {
         y: (clientY - (posY || clientY))
       };
 
-      const [ imageTransformX = 0, imageTransformY = 0 ] = getComputedTranslateXY(heroImage);
-      const [ textTransformX = 0, textTransformY = 0 ] = getComputedTranslateXY(heroText);
+      const [ imageTransformX, imageTransformY, imageTransformZ ] = getComputedTranslateXYZ(heroImage);
+      const [ textTransformX, textTransformY, textTransformZ ] = getComputedTranslateXYZ(heroText);
 
       // New hero position
       target.pos = {
@@ -100,8 +108,8 @@ $(function() {
         y: clientY
       };
 
-      heroImage.style.transform = `translateX(${imageTransformX + (posDiff.x / 90)}px) translateY(${imageTransformY + (posDiff.y / 90)}px)`;
-      heroText.style.transform = `translateX(${textTransformX - (posDiff.x / 30)}px) translateY(${textTransformY - (posDiff.y / 30)}px)`;
+      heroImage.style.transform = `translate3d(${imageTransformX - (posDiff.x / 30)}px,${imageTransformY + (posDiff.y / 30)}px,${imageTransformZ - (posDiff.x / 10)}px)`;
+      heroText.style.transform = `translate3d(${textTransformX + (posDiff.x / 60)}px, ${textTransformY - (posDiff.y / 60)}px, ${textTransformZ + (posDiff.x / 10)}px)`;
     }
 
     heroInner.addEventListener('mousemove', handleHeroMouseMove);

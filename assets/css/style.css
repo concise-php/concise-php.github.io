@@ -48,6 +48,7 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
+  perspective: 1000px;
 }
 
 .hero__text {
@@ -61,7 +62,7 @@
   animation-duration: 0.8s;
   animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
   will-change: opacity,transform;
-  transform: translateX(0);
+  transform: translateX(0) translateZ(0);
   opacity: 1;
 }
 
@@ -85,7 +86,7 @@
 
   animation-delay: 0.2s;
   will-change: opacity,transform;
-  transform: translateY(0);
+  transform: translateY(0) translateZ(0);
   opacity: 1;
 }
 

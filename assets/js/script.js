@@ -110,6 +110,10 @@ $(function() {
 
       heroImage.style.transform = `translate3d(${imageTransformX - (posDiff.x / 30)}px,${imageTransformY + (posDiff.y / 30)}px,${imageTransformZ - (posDiff.x / 10)}px)`;
       heroText.style.transform = `translate3d(${textTransformX + (posDiff.x / 60)}px, ${textTransformY - (posDiff.y / 60)}px, ${textTransformZ + (posDiff.x / 10)}px)`;
+      heroText.style.opacity = '1';
+      heroImage.style.opacity = '1';
+      heroText.style.animationFillMode = 'none';
+      heroImage.style.animationFillMode = 'none';
     }
 
     heroInner.addEventListener('mousemove', handleHeroMouseMove);
